@@ -6,11 +6,16 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "electron": "electron .",
+    "electron:dev": "vite build && electron .",
+    "start": "node start.js",
+    "test-api": "node test_api.js",
     "build": "vue-tsc && vite build && electron-builder",
     "preview": "vite preview"
   },
   "dependencies": {
-    "vue": "^3.4.21"
+    "vue": "^3.4.21",
+    "node-fetch": "^3.3.2"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.4",

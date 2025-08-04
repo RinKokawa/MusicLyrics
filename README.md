@@ -1,4 +1,4 @@
-# MusicLyrics - 音乐歌词获取处理工具
+# MusicLyrics
 
 [![Vue](https://img.shields.io/badge/Vue-3.4.21-42b883?style=flat-square&logo=vue.js)](https://vuejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.2.2-3178c6?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
@@ -7,110 +7,149 @@
 
 一个基于 Vue 3 + TypeScript + Electron 开发的跨平台音乐歌词获取和处理工具，支持网易云音乐、QQ音乐等主流音乐平台的歌词获取、处理和导出功能。
 
-## ✨ 主要功能
+## 主要功能
+- 🎵 支持汽水音乐分享链接解析
+- 🎵 支持网易云音乐分享链接解析（开发中）
+- 🎵 自动提取歌曲信息和歌词内容
+- 🎵 简洁美观的用户界面
+- 🎵 实时错误提示和结果展示
 
-### 🎵 歌词获取
-- **多平台支持**：支持网易云音乐、QQ音乐等主流音乐平台
-- **智能搜索**：支持歌曲名、歌手名、专辑名等多种搜索方式
-- **批量处理**：支持批量获取多首歌曲的歌词
-- **实时同步**：获取最新版本的歌词数据
+## 支持的平台
 
-### 📝 歌词处理
-- **多语言支持**：支持中文、英文、日文、韩文等多种语言歌词
-- **翻译功能**：支持歌词翻译（中文↔英文、日文等）
-- **拼音标注**：为中文歌词自动添加拼音标注
-- **音译歌词**：支持外文歌曲的音译歌词生成
-- **逐字歌词**：支持卡拉OK模式的逐字歌词同步
+- ✅ 汽水音乐 (qishui.douyin.com)
+- 🚧 网易云音乐 (开发中)
+- 🚧 QQ音乐 (开发中)
 
-### 💾 导出格式
-- **LRC格式**：标准歌词文件格式，支持时间轴同步
-- **SRT格式**：字幕文件格式，兼容性强
-- **自定义编码**：支持UTF-8、GBK等多种编码格式
-- **自定义命名**：支持自定义文件名输出规则
-
-### 🔧 高级功能
-- **歌词编辑**：内置歌词编辑器，支持手动修改和调整
-- **时间轴调整**：精确调整歌词显示时间
-- **格式转换**：支持不同歌词格式之间的转换
-- **批量导出**：支持批量导出处理后的歌词文件
-
-## 🚀 快速开始
+## 快速开始
 
 ### 环境要求
-- Node.js >= 16.0.0
-- npm >= 8.0.0
+- Python 3.7+
+- Node.js 16+
+- npm 或 yarn
 
 ### 安装依赖
+
+1. 安装Node.js依赖：
+   ```bash
+   npm install
+   ```
+
+2. 安装Python依赖：
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+### 启动应用
+
+#### 一键启动（推荐）
 ```bash
-npm install
+npm start
 ```
 
-### 开发模式
-```bash
-npm run dev
-```
+#### 分步启动
+1. 启动开发服务器：
+   ```bash
+   npm run dev
+   ```
 
-### 构建应用
+2. 启动Electron应用：
+   ```bash
+   npm run electron:dev
+   ```
+
+#### 生产模式
 ```bash
 npm run build
 ```
 
-### 预览构建结果
+### 独立运行Python服务器（可选）
+如果需要单独运行Python后端服务进行调试：
 ```bash
-npm run preview
+python server.py --standalone
 ```
 
-## 📦 技术栈
+### 测试API连接
+```bash
+npm run test-api
+```
 
-- **前端框架**：Vue 3 + TypeScript
-- **桌面应用**：Electron
-- **构建工具**：Vite
-- **开发语言**：TypeScript
-- **UI组件**：Vue 3 Composition API
+## 使用方法
 
-## 🎯 使用场景
+1. 选择音乐平台（目前支持汽水音乐）
+2. 复制音乐分享链接到输入框
+3. 点击"获取歌词"按钮
+4. 查看解析结果，包括歌曲信息和歌词内容
 
-- **音乐爱好者**：获取喜欢的歌曲歌词，制作歌词文件
-- **卡拉OK用户**：生成带时间轴的歌词文件用于卡拉OK
-- **字幕制作**：将歌词转换为SRT格式用于视频字幕
-- **学习外语**：通过歌词学习外语，配合翻译功能
-- **音乐教学**：为音乐教学准备歌词材料
+## 示例链接
 
-## 🔍 搜索功能
+汽水音乐分享链接格式：
+```
+《矛盾》@汽水音乐 https://qishui.douyin.com/s/imQw1YUw/
+```
 
-- **精确搜索**：通过歌曲ID、歌手ID等精确信息搜索
-- **模糊搜索**：支持关键词模糊匹配
-- **批量搜索**：支持文件批量导入搜索
-- **历史记录**：保存搜索历史，快速重复搜索
+## 技术栈
 
-## 📁 文件管理
+### 前端
+- Vue 3
+- TypeScript
+- Vite
+- Electron
 
-- **本地存储**：自动保存获取的歌词到本地
-- **文件组织**：按歌手、专辑等分类组织文件
-- **备份恢复**：支持歌词文件的备份和恢复
-- **导入导出**：支持多种格式的歌词文件导入导出
+### 后端
+- Python 3.7+
+- Flask
+- Requests
 
-## 🎨 界面特性
+## API接口
 
-- **现代化UI**：采用现代化的用户界面设计
-- **响应式布局**：适配不同屏幕尺寸
-- **深色模式**：支持深色/浅色主题切换
-- **多语言界面**：支持中文、英文界面语言
+### 解析汽水音乐链接
+- **URL**: `POST /api/parse-soda-link`
+- **请求体**:
+  ```json
+  {
+    "url": "https://qishui.douyin.com/s/xxx/",
+    "platform": "qishui"
+  }
+  ```
+- **响应**:
+  ```json
+  {
+    "success": true,
+    "lyrics": "歌词内容...",
+    "lyrics_with_timing": [...],
+    "song_info": {
+      "track_name": "歌曲名",
+      "artist_name": "艺术家",
+      "duration": 180
+    }
+  }
+  ```
 
-## 🤝 贡献指南
+## 开发说明
 
-欢迎提交 Issue 和 Pull Request 来帮助改进这个项目！
+### 项目结构
+```
+MusicLyrics/
+├── src/                 # Vue前端源码
+│   └── App.vue         # 主应用组件
+├── server.py           # Python后端服务
+├── requirements.txt    # Python依赖
+├── start.bat          # 启动脚本
+└── README.md          # 说明文档
+```
 
-### 贡献方式
-1. Fork 本仓库
-2. 创建您的特性分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交您的更改 (`git commit -m 'Add some AmazingFeature'`)
-4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 打开一个 Pull Request
+### 添加新平台支持
 
-## 📄 许可证
+1. 在 `server.py` 中添加新的解析函数
+2. 在 `src/App.vue` 中更新平台列表
+3. 添加相应的API端点
 
-本项目采用 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情。
+## 注意事项
+
+- 确保网络连接正常
+- 汽水音乐链接需要是公开可访问的
+- 后端服务默认运行在 5000 端口
+- 前端应用默认运行在 5173 端口
 
 ## 🙏 致谢
 

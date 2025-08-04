@@ -4,6 +4,8 @@ import { ref } from 'vue'
 const linkInput = ref('')
 const selectedPlatform = ref('qishui')
 const isLoading = ref(false)
+const result = ref<any>(null)
+const error = ref<string>('')
 
 const platforms = [
   { value: 'netease', label: '网易云音乐', supported: true },
@@ -11,37 +13,67 @@ const platforms = [
   { value: 'qishui', label: '汽水音乐', supported: true }
 ]
 
-const handleProcessLink = () => {
+const handleProcessLink = async () => {
   if (!linkInput.value.trim()) {
-    alert('请输入音乐链接')
+    error.value = '请输入音乐链接'
     return
   }
   
   const selectedPlatformData = platforms.find(p => p.value === selectedPlatform.value)
   if (!selectedPlatformData?.supported) {
-    alert('该平台暂不支持，请选择其他平台')
+    error.value = '该平台暂不支持，请选择其他平台'
     return
   }
   
   // 验证链接格式
   const urlPattern = /^https?:\/\//i
   if (!urlPattern.test(linkInput.value.trim())) {
-    alert('请输入有效的链接地址')
+    error.value = '请输入有效的链接地址'
     return
   }
   
   isLoading.value = true
-  console.log('处理链接:', linkInput.value, '平台:', selectedPlatform.value)
+  error.value = ''
+  result.value = null
   
-  setTimeout(() => {
+  try {
+    const response = await fetch('http://localhost:5000/api/parse-soda-link', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        url: linkInput.value.trim(),
+        platform: selectedPlatform.value
+      })
+    })
+    
+    const data = await response.json()
+    
+    if (data.success) {
+      result.value = data
+      console.log('解析成功:', data)
+    } else {
+      error.value = data.error || '解析失败'
+      console.error('解析失败:', data.error)
+    }
+  } catch (err) {
+    error.value = '网络请求失败，请检查后端服务是否启动'
+    console.error('请求失败:', err)
+  } finally {
     isLoading.value = false
-  }, 1000)
+  }
 }
 
 const handleKeyPress = (event: KeyboardEvent) => {
   if (event.key === 'Enter') {
     handleProcessLink()
   }
+}
+
+const clearResult = () => {
+  result.value = null
+  error.value = ''
 }
 </script>
 
@@ -92,6 +124,46 @@ const handleKeyPress = (event: KeyboardEvent) => {
           </button>
         </div>
 
+        <!-- 错误提示 -->
+        <div v-if="error" class="error-message">
+          <p>❌ {{ error }}</p>
+        </div>
+
+        <!-- 结果显示 -->
+        <div v-if="result" class="result-container">
+          <div class="result-header">
+            <h3>解析结果</h3>
+            <button @click="clearResult" class="clear-btn">清除</button>
+          </div>
+          
+          <!-- 歌曲信息 -->
+          <div v-if="result.song_info" class="song-info">
+            <h4>歌曲信息</h4>
+            <div class="info-grid">
+              <div class="info-item">
+                <span class="label">歌曲名：</span>
+                <span class="value">{{ result.song_info.track_name || '未知' }}</span>
+              </div>
+              <div class="info-item">
+                <span class="label">艺术家：</span>
+                <span class="value">{{ result.song_info.artist_name || '未知' }}</span>
+              </div>
+              <div v-if="result.song_info.duration" class="info-item">
+                <span class="label">时长：</span>
+                <span class="value">{{ Math.floor(result.song_info.duration / 60) }}:{{ String(result.song_info.duration % 60).padStart(2, '0') }}</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 歌词内容 -->
+          <div v-if="result.lyrics" class="lyrics-content">
+            <h4>歌词内容</h4>
+            <div class="lyrics-text">
+              {{ result.lyrics }}
+            </div>
+          </div>
+        </div>
+
         <div class="tips">
           <p>💡 使用提示：</p>
           <ul>
@@ -136,9 +208,10 @@ const handleKeyPress = (event: KeyboardEvent) => {
 .main {
   flex: 1;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   padding: 1.5rem;
+  overflow-y: auto;
 }
 
 .search-box {
@@ -146,7 +219,7 @@ const handleKeyPress = (event: KeyboardEvent) => {
   border: 1px solid #ddd;
   border-radius: 8px;
   padding: 1.5rem;
-  max-width: 450px;
+  max-width: 600px;
   width: 100%;
 }
 
@@ -231,6 +304,112 @@ const handleKeyPress = (event: KeyboardEvent) => {
   cursor: not-allowed;
 }
 
+.error-message {
+  background: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.error-message p {
+  margin: 0;
+  color: #721c24;
+  font-size: 0.85rem;
+}
+
+.result-container {
+  margin-bottom: 1rem;
+  border: 1px solid #e9ecef;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.result-header {
+  background: #f8f9fa;
+  padding: 0.75rem;
+  border-bottom: 1px solid #e9ecef;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.result-header h3 {
+  margin: 0;
+  font-size: 1rem;
+  color: #333;
+}
+
+.clear-btn {
+  padding: 0.3rem 0.6rem;
+  background: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.clear-btn:hover {
+  background: #5a6268;
+}
+
+.song-info {
+  padding: 0.75rem;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.song-info h4 {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.info-grid {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+}
+
+.info-item .label {
+  font-weight: 500;
+  font-size: 0.8rem;
+  color: #666;
+  min-width: 60px;
+}
+
+.info-item .value {
+  font-size: 0.8rem;
+  color: #333;
+}
+
+.lyrics-content {
+  padding: 0.75rem;
+}
+
+.lyrics-content h4 {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.lyrics-text {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 3px;
+  padding: 0.75rem;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: #333;
+  white-space: pre-wrap;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
 .tips {
   background: #f8f9fa;
   border: 1px solid #e9ecef;
@@ -274,6 +453,10 @@ const handleKeyPress = (event: KeyboardEvent) => {
   
   .search-box {
     padding: 1rem;
+  }
+  
+  .info-grid {
+    grid-template-columns: 1fr;
   }
 }
 </style>
