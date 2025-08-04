@@ -10,18 +10,13 @@
   "files": [
     "dist",
     "dist-electron",
-    "server.py",
-    "requirements.txt",
+    "simple-parser.js",
     "scripts/**/*"
   ],
   "extraResources": [
     {
-      "from": "server.py",
-      "to": "server.py"
-    },
-    {
-      "from": "requirements.txt",
-      "to": "requirements.txt"
+      "from": "simple-parser.js",
+      "to": "simple-parser.js"
     },
     {
       "from": "scripts",
@@ -39,19 +34,14 @@
   "win": {
     "target": [
       {
-        "target": "nsis",
-        "arch": [
-          "x64"
-        ]
-      },
-      {
         "target": "portable",
         "arch": [
           "x64"
         ]
       }
     ],
-    "artifactName": "${productName}-Windows-${version}-Setup.${ext}"
+    "artifactName": "${productName}-Windows-${version}-Portable.${ext}",
+    "sign": false
   },
   "nsis": {
     "oneClick": false,

@@ -1,8 +1,7 @@
 import { app, BrowserWindow, ipcMain } from 'electron'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
-import { spawn, ChildProcess } from 'child_process'
-import { promisify } from 'util'
+import { spawn } from 'child_process'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -38,7 +37,7 @@ function getResourcePath(relativePath: string): string {
 }
 
 // 解析歌词的IPC处理器
-ipcMain.handle('parse-lyrics', async (event, url: string) => {
+ipcMain.handle('parse-lyrics', async (_event, url: string) => {
   try {
     const scriptPath = getResourcePath('simple-parser.js')
     

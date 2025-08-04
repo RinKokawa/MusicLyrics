@@ -20,7 +20,8 @@
     "package:win": "node scripts/build.js win",
     "package:mac": "node scripts/build.js mac",
     "package:linux": "node scripts/build.js linux",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "build:simple": "node scripts/build-simple.js"
   },
   "dependencies": {
     "vue": "^3.4.21",
