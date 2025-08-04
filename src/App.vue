@@ -1,24 +1,37 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-const searchQuery = ref('')
-const searchType = ref('song')
+const linkInput = ref('')
+const selectedPlatform = ref('qishui')
 const isLoading = ref(false)
 
-const searchTypes = [
-  { value: 'song', label: '歌曲名' },
-  { value: 'artist', label: '歌手名' },
-  { value: 'album', label: '专辑名' }
+const platforms = [
+  { value: 'netease', label: '网易云音乐', supported: true },
+  { value: 'qq', label: 'QQ音乐', supported: false },
+  { value: 'qishui', label: '汽水音乐', supported: true }
 ]
 
-const handleSearch = () => {
-  if (!searchQuery.value.trim()) {
-    alert('请输入搜索内容')
+const handleProcessLink = () => {
+  if (!linkInput.value.trim()) {
+    alert('请输入音乐链接')
+    return
+  }
+  
+  const selectedPlatformData = platforms.find(p => p.value === selectedPlatform.value)
+  if (!selectedPlatformData?.supported) {
+    alert('该平台暂不支持，请选择其他平台')
+    return
+  }
+  
+  // 验证链接格式
+  const urlPattern = /^https?:\/\//i
+  if (!urlPattern.test(linkInput.value.trim())) {
+    alert('请输入有效的链接地址')
     return
   }
   
   isLoading.value = true
-  console.log('搜索:', searchQuery.value, '类型:', searchType.value)
+  console.log('处理链接:', linkInput.value, '平台:', selectedPlatform.value)
   
   setTimeout(() => {
     isLoading.value = false
@@ -27,7 +40,7 @@ const handleSearch = () => {
 
 const handleKeyPress = (event: KeyboardEvent) => {
   if (event.key === 'Enter') {
-    handleSearch()
+    handleProcessLink()
   }
 }
 </script>
@@ -41,55 +54,56 @@ const handleKeyPress = (event: KeyboardEvent) => {
 
     <main class="main">
       <div class="search-box">
-        <h2>搜索歌词</h2>
+        <h2>获取歌词</h2>
         
-        <div class="search-type">
-          <label>搜索类型：</label>
-          <div class="type-buttons">
-            <button
-              v-for="type in searchTypes"
-              :key="type.value"
-              :class="['type-btn', { active: searchType === type.value }]"
-              @click="searchType = type.value"
+        <div class="platform-select">
+          <label>选择平台：</label>
+          <select 
+            v-model="selectedPlatform" 
+            class="platform-dropdown"
+            :disabled="isLoading"
+          >
+            <option 
+              v-for="platform in platforms" 
+              :key="platform.value" 
+              :value="platform.value"
+              :disabled="!platform.supported"
             >
-              {{ type.label }}
-            </button>
-          </div>
+              {{ platform.label }}{{ !platform.supported ? ' (暂不支持)' : '' }}
+            </option>
+          </select>
         </div>
 
         <div class="search-input-group">
           <input
-            v-model="searchQuery"
+            v-model="linkInput"
             type="text"
             class="search-input"
-            placeholder="请输入歌曲名、歌手名或专辑名..."
+            placeholder="请输入音乐分享链接..."
             @keypress="handleKeyPress"
             :disabled="isLoading"
           />
           <button
             class="search-btn"
-            @click="handleSearch"
-            :disabled="isLoading || !searchQuery.trim()"
+            @click="handleProcessLink"
+            :disabled="isLoading || !linkInput.trim()"
           >
-            {{ isLoading ? '搜索中...' : '搜索' }}
+            {{ isLoading ? '处理中...' : '获取歌词' }}
           </button>
         </div>
 
         <div class="tips">
-          <p>💡 搜索提示：</p>
+          <p>💡 使用提示：</p>
           <ul>
-            <li>支持模糊搜索，输入部分关键词即可</li>
-            <li>支持网易云音乐、QQ音乐等平台</li>
-            <li>可以搜索歌曲名、歌手名或专辑名</li>
-            <li>按回车键快速搜索</li>
+            <li>支持网易云音乐和汽水音乐的分享链接</li>
+            <li>QQ音乐功能正在开发中</li>
+            <li>请复制音乐平台的分享链接到输入框</li>
+            <li>支持歌曲、专辑、歌单等链接</li>
+            <li>按回车键快速处理</li>
           </ul>
         </div>
       </div>
     </main>
-
-    <footer class="footer">
-      <p>Powered by Vue 3 + TypeScript + Electron</p>
-    </footer>
   </div>
 </template>
 
@@ -105,17 +119,18 @@ const handleKeyPress = (event: KeyboardEvent) => {
   background: #333;
   color: white;
   text-align: center;
-  padding: 2rem 0;
+  padding: 1rem 0;
 }
 
 .header h1 {
-  margin: 0 0 0.5rem 0;
-  font-size: 2rem;
+  margin: 0 0 0.2rem 0;
+  font-size: 1.4rem;
 }
 
 .header p {
   margin: 0;
   opacity: 0.8;
+  font-size: 0.8rem;
 }
 
 .main {
@@ -123,15 +138,15 @@ const handleKeyPress = (event: KeyboardEvent) => {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2rem;
+  padding: 1.5rem;
 }
 
 .search-box {
   background: white;
   border: 1px solid #ddd;
   border-radius: 8px;
-  padding: 2rem;
-  max-width: 500px;
+  padding: 1.5rem;
+  max-width: 450px;
   width: 100%;
 }
 
@@ -139,39 +154,43 @@ const handleKeyPress = (event: KeyboardEvent) => {
   margin: 0 0 1rem 0;
   text-align: center;
   color: #333;
+  font-size: 1.25rem;
 }
 
-.search-type {
+.platform-select {
   margin-bottom: 1rem;
 }
 
-.search-type label {
+.platform-select label {
   display: block;
   margin-bottom: 0.5rem;
   font-weight: 500;
+  font-size: 0.9rem;
 }
 
-.type-buttons {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.type-btn {
-  padding: 0.5rem 1rem;
+.platform-dropdown {
+  width: 100%;
+  padding: 0.6rem;
   border: 1px solid #ddd;
-  background: white;
   border-radius: 4px;
+  font-size: 0.9rem;
+  background-color: white;
   cursor: pointer;
 }
 
-.type-btn:hover {
-  background: #f0f0f0;
+.platform-dropdown:focus {
+  outline: none;
+  border-color: #007bff;
 }
 
-.type-btn.active {
-  background: #007bff;
-  color: white;
-  border-color: #007bff;
+.platform-dropdown:disabled {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+}
+
+.platform-dropdown option:disabled {
+  color: #999;
+  font-style: italic;
 }
 
 .search-input-group {
@@ -182,10 +201,10 @@ const handleKeyPress = (event: KeyboardEvent) => {
 
 .search-input {
   flex: 1;
-  padding: 0.75rem;
+  padding: 0.6rem;
   border: 1px solid #ddd;
   border-radius: 4px;
-  font-size: 1rem;
+  font-size: 0.9rem;
 }
 
 .search-input:focus {
@@ -194,13 +213,13 @@ const handleKeyPress = (event: KeyboardEvent) => {
 }
 
 .search-btn {
-  padding: 0.75rem 1.5rem;
+  padding: 0.6rem 1.2rem;
   background: #007bff;
   color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 1rem;
+  font-size: 0.9rem;
 }
 
 .search-btn:hover:not(:disabled) {
@@ -216,34 +235,24 @@ const handleKeyPress = (event: KeyboardEvent) => {
   background: #f8f9fa;
   border: 1px solid #e9ecef;
   border-radius: 4px;
-  padding: 1rem;
+  padding: 0.75rem;
 }
 
 .tips p {
   margin: 0 0 0.5rem 0;
   font-weight: 500;
+  font-size: 0.85rem;
 }
 
 .tips ul {
   margin: 0;
-  padding-left: 1.2rem;
+  padding-left: 1rem;
   color: #666;
+  font-size: 0.8rem;
 }
 
 .tips li {
-  margin-bottom: 0.25rem;
-}
-
-.footer {
-  background: #333;
-  color: white;
-  text-align: center;
-  padding: 1rem;
-}
-
-.footer p {
-  margin: 0;
-  opacity: 0.8;
+  margin-bottom: 0.2rem;
 }
 
 @media (max-width: 768px) {
@@ -251,8 +260,20 @@ const handleKeyPress = (event: KeyboardEvent) => {
     flex-direction: column;
   }
   
-  .type-buttons {
-    flex-wrap: wrap;
+  .header {
+    padding: 0.8rem 0;
+  }
+  
+  .header h1 {
+    font-size: 1.2rem;
+  }
+  
+  .main {
+    padding: 1rem;
+  }
+  
+  .search-box {
+    padding: 1rem;
   }
 }
 </style>
