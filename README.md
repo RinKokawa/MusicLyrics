@@ -5,165 +5,109 @@
 [![Electron](https://img.shields.io/badge/Electron-30.0.1-47848f?style=flat-square&logo=electron)](https://www.electronjs.org/)
 [![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
 
-一个基于 Vue 3 + TypeScript + Electron 开发的跨平台音乐歌词获取和处理工具，支持网易云音乐、QQ音乐等主流音乐平台的歌词获取、处理和导出功能。
+一个简单的音乐歌词获取工具，支持从汽水音乐等平台获取歌词。
 
-## 主要功能
-- 🎵 支持汽水音乐分享链接解析
-- 🎵 支持网易云音乐分享链接解析（开发中）
-- 🎵 自动提取歌曲信息和歌词内容
-- 🎵 简洁美观的用户界面
-- 🎵 实时错误提示和结果展示
+## 功能特性
 
-## 支持的平台
-
-- ✅ 汽水音乐 (qishui.douyin.com)
-- 🚧 网易云音乐 (开发中)
-- 🚧 QQ音乐 (开发中)
+- 🎵 支持汽水音乐链接解析
+- 📝 自动提取歌词内容
+- ⚡ 简单易用，无需复杂服务器
+- 🖥️ 支持命令行工具（推荐）
+- 🖥️ 提供Electron桌面应用
 
 ## 快速开始
 
-### 环境要求
-- Python 3.7+
-- Node.js 16+
-- npm 或 yarn
-
 ### 安装依赖
 
-1. 安装Node.js依赖：
-   ```bash
-   npm install
-   ```
-
-2. 安装Python依赖：
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-### 启动应用
-
-#### 一键启动（推荐）
 ```bash
-npm start
+npm install
 ```
 
-#### 分步启动
-1. 启动开发服务器：
-   ```bash
-   npm run dev
-   ```
+### 命令行使用（推荐）
 
-2. 启动Electron应用：
-   ```bash
-   npm run electron:dev
-   ```
+最简单的使用方式，直接解析汽水音乐链接：
 
-#### 生产模式
 ```bash
+# 使用简单脚本
+node simple-parser.js https://qishui.douyin.com/s/imQw1YUw/
+
+# 或者使用npm脚本
+npm run simple https://qishui.douyin.com/s/imQw1YUw/
+```
+
+### Electron桌面应用
+
+启动Electron桌面应用：
+
+```bash
+# 开发模式
+npm run electron:dev
+
+# 或者构建后运行
 npm run build
+npm run electron
 ```
 
-### 独立运行Python服务器（可选）
-如果需要单独运行Python后端服务进行调试：
+
+
+## 使用示例
+
+### 命令行输出示例
+
 ```bash
-python server.py --standalone
+$ node simple-parser.js https://qishui.douyin.com/s/imQw1YUw/
+
+🎵 正在解析汽水音乐链接...
+📝 链接: https://qishui.douyin.com/s/imQw1YUw/
+
+✅ 解析成功！
+
+📋 歌曲信息:
+   歌曲名: 矛盾
+   艺术家: z²
+   时长: 2:37
+
+🎵 歌词内容:
+──────────────────────────────────────────────────
+君以外じゃ 叶わない思い
+君以外の 恋は知らない
+...
+──────────────────────────────────────────────────
+
+📊 共 30 行歌词
 ```
 
-### 测试API连接
-```bash
-npm run test-api
+## 项目结构
+
+```
+MusicLyrics/
+├── simple-parser.js      # 简单的命令行解析工具（推荐）
+├── lyrics-parser.js      # 歌词解析核心逻辑
+├── electron/             # Electron主进程和预加载脚本
+├── src/                  # Vue渲染进程源码
+└── package.json          # 项目配置
 ```
 
-## 使用方法
+## 为什么选择简单方案？
 
-1. 选择音乐平台（目前支持汽水音乐）
-2. 复制音乐分享链接到输入框
-3. 点击"获取歌词"按钮
-4. 查看解析结果，包括歌曲信息和歌词内容
+你说得对！一个简单的POST请求确实不需要启动一个完整的服务器。
 
-## 示例链接
+### 🎯 推荐方案：命令行工具
+- **简单直接**：一个脚本文件，无需服务器
+- **快速响应**：直接处理，无网络延迟
+- **易于使用**：复制链接，运行脚本，获得结果
+- **无依赖**：只需要Node.js和node-fetch
 
-汽水音乐分享链接格式：
-```
-《矛盾》@汽水音乐 https://qishui.douyin.com/s/imQw1YUw/
-```
+### 🖥️ Electron桌面应用
+- **原生体验**：桌面应用，无需浏览器
+- **IPC通信**：渲染进程通过IPC调用主进程
+- **直接调用**：主进程直接调用Node.js脚本，无需HTTP服务器
 
 ## 技术栈
 
-### 前端
-- Vue 3
-- TypeScript
-- Vite
-- Electron
+- **核心**: Node.js + node-fetch
+- **桌面**: Electron + Vue 3 + TypeScript
 
-### 后端
-- Python 3.7+
-- Flask
-- Requests
+## 许可证
 
-## API接口
-
-### 解析汽水音乐链接
-- **URL**: `POST /api/parse-soda-link`
-- **请求体**:
-  ```json
-  {
-    "url": "https://qishui.douyin.com/s/xxx/",
-    "platform": "qishui"
-  }
-  ```
-- **响应**:
-  ```json
-  {
-    "success": true,
-    "lyrics": "歌词内容...",
-    "lyrics_with_timing": [...],
-    "song_info": {
-      "track_name": "歌曲名",
-      "artist_name": "艺术家",
-      "duration": 180
-    }
-  }
-  ```
-
-## 开发说明
-
-### 项目结构
-```
-MusicLyrics/
-├── src/                 # Vue前端源码
-│   └── App.vue         # 主应用组件
-├── server.py           # Python后端服务
-├── requirements.txt    # Python依赖
-├── start.bat          # 启动脚本
-└── README.md          # 说明文档
-```
-
-### 添加新平台支持
-
-1. 在 `server.py` 中添加新的解析函数
-2. 在 `src/App.vue` 中更新平台列表
-3. 添加相应的API端点
-
-## 注意事项
-
-- 确保网络连接正常
-- 汽水音乐链接需要是公开可访问的
-- 后端服务默认运行在 5000 端口
-- 前端应用默认运行在 5173 端口
-
-## 🙏 致谢
-
-本项目参考了以下开源项目：
-- [163MusicLyrics](https://github.com/jitwxs/163MusicLyrics) - 网易云音乐歌词获取工具
-- [NeteaseCloudMusicApi](https://github.com/Binaryify/NeteaseCloudMusicApi) - 网易云音乐API
-- [QQMusicApi](https://github.com/jsososo/QQMusicApi) - QQ音乐API
-
-## 📞 联系方式
-
-- 项目主页：[GitHub Repository](https://github.com/your-username/MusicLyrics)
-- 问题反馈：[Issues](https://github.com/your-username/MusicLyrics/issues)
-- 功能建议：[Discussions](https://github.com/your-username/MusicLyrics/discussions)
-
----
-
-⭐ 如果这个项目对您有帮助，请给我一个 Star！ 
+MIT License 

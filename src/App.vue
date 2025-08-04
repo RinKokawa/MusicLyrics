@@ -8,7 +8,7 @@ const result = ref<any>(null)
 const error = ref<string>('')
 
 const platforms = [
-  { value: 'netease', label: '网易云音乐', supported: true },
+  { value: 'netease', label: '网易云音乐', supported: false },
   { value: 'qq', label: 'QQ音乐', supported: false },
   { value: 'qishui', label: '汽水音乐', supported: true }
 ]
@@ -37,18 +37,8 @@ const handleProcessLink = async () => {
   result.value = null
   
   try {
-    const response = await fetch('http://localhost:5000/api/parse-soda-link', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        url: linkInput.value.trim(),
-        platform: selectedPlatform.value
-      })
-    })
-    
-    const data = await response.json()
+    // 通过IPC调用主进程的歌词解析功能
+    const data = await (window as any).ipcRenderer.invoke('parse-lyrics', linkInput.value.trim())
     
     if (data.success) {
       result.value = data
@@ -58,7 +48,7 @@ const handleProcessLink = async () => {
       console.error('解析失败:', data.error)
     }
   } catch (err) {
-    error.value = '网络请求失败，请检查后端服务是否启动'
+    error.value = `解析失败: ${err instanceof Error ? err.message : '未知错误'}`
     console.error('请求失败:', err)
   } finally {
     isLoading.value = false
@@ -150,7 +140,7 @@ const clearResult = () => {
               </div>
               <div v-if="result.song_info.duration" class="info-item">
                 <span class="label">时长：</span>
-                <span class="value">{{ Math.floor(result.song_info.duration / 60) }}:{{ String(result.song_info.duration % 60).padStart(2, '0') }}</span>
+                <span class="value">{{ result.song_info.duration }}</span>
               </div>
             </div>
           </div>
@@ -167,8 +157,7 @@ const clearResult = () => {
         <div class="tips">
           <p>💡 使用提示：</p>
           <ul>
-            <li>支持网易云音乐和汽水音乐的分享链接</li>
-            <li>QQ音乐功能正在开发中</li>
+            <li>支持汽水音乐的分享链接</li>
             <li>请复制音乐平台的分享链接到输入框</li>
             <li>支持歌曲、专辑、歌单等链接</li>
             <li>按回车键快速处理</li>
@@ -459,4 +448,4 @@ const clearResult = () => {
     grid-template-columns: 1fr;
   }
 }
-</style>
+</style> 
