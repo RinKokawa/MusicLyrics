@@ -28,6 +28,7 @@ dist-electron
 # Build outputs
 build/
 out/
+release/
 
 # Reference
 Reference/
