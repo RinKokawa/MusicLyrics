@@ -9,18 +9,43 @@
   },
   "files": [
     "dist",
-    "dist-electron"
+    "dist-electron",
+    "server.py",
+    "requirements.txt",
+    "scripts/**/*"
   ],
+  "extraResources": [
+    {
+      "from": "server.py",
+      "to": "server.py"
+    },
+    {
+      "from": "requirements.txt",
+      "to": "requirements.txt"
+    },
+    {
+      "from": "scripts",
+      "to": "scripts"
+    }
+  ],
+  "forceCodeSigning": false,
   "mac": {
     "target": [
       "dmg"
     ],
-    "artifactName": "${productName}-Mac-${version}-Installer.${ext}"
+    "artifactName": "${productName}-Mac-${version}-Installer.${ext}",
+    "category": "public.app-category.music"
   },
   "win": {
     "target": [
       {
         "target": "nsis",
+        "arch": [
+          "x64"
+        ]
+      },
+      {
+        "target": "portable",
         "arch": [
           "x64"
         ]
@@ -32,12 +57,15 @@
     "oneClick": false,
     "perMachine": false,
     "allowToChangeInstallationDirectory": true,
-    "deleteAppDataOnUninstall": false
+    "deleteAppDataOnUninstall": false,
+    "createDesktopShortcut": true,
+    "createStartMenuShortcut": true
   },
   "linux": {
     "target": [
       "AppImage"
     ],
-    "artifactName": "${productName}-Linux-${version}.${ext}"
+    "artifactName": "${productName}-Linux-${version}.${ext}",
+    "category": "Audio"
   }
 }

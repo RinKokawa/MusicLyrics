@@ -11,6 +11,15 @@
     "start": "node start.js",
     "test-api": "node test_api.js",
     "build": "vue-tsc && vite build && electron-builder",
+    "build:win": "vue-tsc && vite build && electron-builder --win",
+    "build:mac": "vue-tsc && vite build && electron-builder --mac",
+    "build:linux": "vue-tsc && vite build && electron-builder --linux",
+    "pack": "vue-tsc && vite build && electron-builder --dir",
+    "dist": "vue-tsc && vite build && electron-builder",
+    "package": "node scripts/build.js",
+    "package:win": "node scripts/build.js win",
+    "package:mac": "node scripts/build.js mac",
+    "package:linux": "node scripts/build.js linux",
     "preview": "vite preview"
   },
   "dependencies": {

@@ -1,10 +1,8 @@
 import { app, BrowserWindow } from 'electron'
-import { createRequire } from 'node:module'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 import { spawn, ChildProcess } from 'child_process'
 
-const require = createRequire(import.meta.url)
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 // The built directory structure
@@ -32,9 +30,20 @@ let pythonProcess: ChildProcess | null = null
 const PYTHON_SERVER_PORT = 5000
 const PYTHON_SERVER_URL = `http://localhost:${PYTHON_SERVER_PORT}`
 
+// 获取资源路径（支持开发和生产环境）
+function getResourcePath(relativePath: string): string {
+  if (app.isPackaged) {
+    // 生产环境：从 app.getAppPath() 获取资源
+    return path.join(process.resourcesPath, relativePath)
+  } else {
+    // 开发环境：从项目根目录获取
+    return path.join(process.env.APP_ROOT!, relativePath)
+  }
+}
+
 function startPythonServer(): Promise<void> {
   return new Promise((resolve, reject) => {
-    const serverPath = path.join(process.env.APP_ROOT!, 'server.py')
+    const serverPath = getResourcePath('server.py')
     
     console.log('启动Python后端服务...')
     console.log('服务器路径:', serverPath)
@@ -42,7 +51,8 @@ function startPythonServer(): Promise<void> {
     // 启动Python服务器
     pythonProcess = spawn('python', [serverPath], {
       stdio: ['pipe', 'pipe', 'pipe'],
-      env: { ...process.env, PYTHONUNBUFFERED: '1' }
+      env: { ...process.env, PYTHONUNBUFFERED: '1' },
+      cwd: app.isPackaged ? process.resourcesPath : process.env.APP_ROOT
     })
     
     // 监听输出
@@ -92,13 +102,14 @@ function startPythonServer(): Promise<void> {
 
 function installPythonDependencies(): Promise<void> {
   return new Promise((resolve, reject) => {
-    const requirementsPath = path.join(process.env.APP_ROOT!, 'requirements.txt')
+    const requirementsPath = getResourcePath('requirements.txt')
     
     console.log('安装Python依赖...')
     console.log('依赖文件路径:', requirementsPath)
     
     const installProcess = spawn('pip', ['install', '-r', requirementsPath], {
-      stdio: 'pipe'
+      stdio: 'pipe',
+      cwd: app.isPackaged ? process.resourcesPath : process.env.APP_ROOT
     })
     
     installProcess.stdout?.on('data', (data) => {
