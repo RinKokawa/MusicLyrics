@@ -10,12 +10,12 @@
   "files": [
     "dist",
     "dist-electron",
-    "simple-parser.js",
+    "scripts/simple-parser.js",
     "scripts/**/*"
   ],
   "extraResources": [
     {
-      "from": "simple-parser.js",
+      "from": "scripts/simple-parser.js",
       "to": "simple-parser.js"
     },
     {

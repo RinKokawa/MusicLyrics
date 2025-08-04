@@ -24,7 +24,7 @@ try {
   console.log('📁 复制必要文件...');
   const __dirname = path.dirname(fileURLToPath(import.meta.url));
   const distDir = path.join(__dirname, '..', 'dist');
-  const simpleParserPath = path.join(__dirname, '..', 'simple-parser.js');
+  const simpleParserPath = path.join(__dirname, 'simple-parser.js');
   const scriptsDir = path.join(__dirname, '..', 'scripts');
   
   if (fs.existsSync(simpleParserPath)) {

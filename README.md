@@ -29,7 +29,7 @@ npm install
 
 ```bash
 # 使用简单脚本
-node simple-parser.js https://qishui.douyin.com/s/imQw1YUw/
+node scripts/simple-parser.js https://qishui.douyin.com/s/imQw1YUw/
 
 # 或者使用npm脚本
 npm run simple https://qishui.douyin.com/s/imQw1YUw/
@@ -55,7 +55,7 @@ npm run electron
 ### 命令行输出示例
 
 ```bash
-$ node simple-parser.js https://qishui.douyin.com/s/imQw1YUw/
+$ node scripts/simple-parser.js https://qishui.douyin.com/s/imQw1YUw/
 
 🎵 正在解析汽水音乐链接...
 📝 链接: https://qishui.douyin.com/s/imQw1YUw/
@@ -81,8 +81,8 @@ $ node simple-parser.js https://qishui.douyin.com/s/imQw1YUw/
 
 ```
 MusicLyrics/
-├── simple-parser.js      # 简单的命令行解析工具（推荐）
-├── lyrics-parser.js      # 歌词解析核心逻辑
+├── scripts/simple-parser.js      # 简单的命令行解析工具（推荐）
+├── scripts/lyrics-parser.js      # 歌词解析核心逻辑
 ├── electron/             # Electron主进程和预加载脚本
 ├── src/                  # Vue渲染进程源码
 └── package.json          # 项目配置

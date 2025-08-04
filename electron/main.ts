@@ -39,7 +39,7 @@ function getResourcePath(relativePath: string): string {
 // 解析歌词的IPC处理器
 ipcMain.handle('parse-lyrics', async (_event, url: string) => {
   try {
-    const scriptPath = getResourcePath('simple-parser.js')
+    const scriptPath = getResourcePath('scripts/simple-parser.js')
     
     console.log('解析歌词:', url)
     console.log('脚本路径:', scriptPath)
