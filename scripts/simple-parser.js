@@ -186,15 +186,42 @@ async function fetchSodaLyrics(url) {
 }
 
 /**
- * 主函数 - 解析汽水音乐链接
+ * 从文本中提取汽水音乐链接
  */
-async function parseSodaLink(url) {
-  if (!url) {
-    return { success: false, error: "请提供链接" };
+function extractSodaLink(text) {
+  if (!text) {
+    return null;
   }
   
-  if (!url.includes('qishui.douyin.com')) {
-    return { success: false, error: "无效的汽水音乐分享链接" };
+  // 正则表达式匹配汽水音乐链接
+  const linkPattern = /https?:\/\/qishui\.douyin\.com\/s\/[a-zA-Z0-9]+\/?/g;
+  const matches = text.match(linkPattern);
+  
+  if (matches && matches.length > 0) {
+    return matches[0]; // 返回第一个匹配的链接
+  }
+  
+  return null;
+}
+
+/**
+ * 主函数 - 解析汽水音乐链接
+ */
+async function parseSodaLink(input) {
+  if (!input) {
+    return { success: false, error: "请提供链接或包含链接的文本" };
+  }
+  
+  // 尝试从输入文本中提取链接
+  let url = extractSodaLink(input);
+  
+  if (!url) {
+    // 如果没有提取到链接，检查输入本身是否是链接
+    if (input.includes('qishui.douyin.com')) {
+      url = input.trim();
+    } else {
+      return { success: false, error: "未找到有效的汽水音乐分享链接" };
+    }
   }
   
   return await fetchSodaLyrics(url);
@@ -202,25 +229,32 @@ async function parseSodaLink(url) {
 
 // 主程序
 async function main() {
-  const url = process.argv[2];
+  const input = process.argv.slice(2).join(' '); // 支持多个参数拼接
   
-  if (!url) {
+  if (!input) {
     console.log('🎵 MusicLyrics - 汽水音乐歌词解析工具');
     console.log('');
     console.log('使用方法:');
-    console.log('  node simple-parser.js <汽水音乐链接>');
+    console.log('  node simple-parser.js <汽水音乐链接或包含链接的文本>');
     console.log('');
     console.log('示例:');
     console.log('  node simple-parser.js https://qishui.douyin.com/s/imQw1YUw/');
+    console.log('  node simple-parser.js "《あっちゅうま》@汽水音乐 https://qishui.douyin.com/s/imbBdEKt/"');
     console.log('');
     process.exit(1);
   }
   
   console.log('🎵 正在解析汽水音乐链接...');
-  console.log(`📝 链接: ${url}`);
+  console.log(`📝 输入内容: ${input}`);
+  
+  // 尝试提取链接
+  const extractedUrl = extractSodaLink(input);
+  if (extractedUrl) {
+    console.log(`🔗 提取到链接: ${extractedUrl}`);
+  }
   console.log('');
   
-  const result = await parseSodaLink(url);
+  const result = await parseSodaLink(input);
   
   if (result.success) {
     console.log('✅ 解析成功！');

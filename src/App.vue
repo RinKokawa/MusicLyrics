@@ -25,11 +25,25 @@ const handleProcessLink = async () => {
     return
   }
   
-  // 验证链接格式
-  const urlPattern = /^https?:\/\//i
-  if (!urlPattern.test(linkInput.value.trim())) {
-    error.value = '请输入有效的链接地址'
-    return
+  // 智能提取汽水音乐链接
+  let processUrl = linkInput.value.trim()
+  if (selectedPlatform.value === 'qishui') {
+    const linkPattern = /https?:\/\/qishui\.douyin\.com\/s\/[a-zA-Z0-9]+\/?/
+    const match = linkInput.value.match(linkPattern)
+    if (match) {
+      processUrl = match[0]
+      console.log('🔗 从文本中提取到链接:', processUrl)
+    } else if (!linkInput.value.includes('qishui.douyin.com')) {
+      error.value = '未找到有效的汽水音乐分享链接'
+      return
+    }
+  } else {
+    // 其他平台的基本URL验证
+    const urlPattern = /^https?:\/\//i
+    if (!urlPattern.test(processUrl)) {
+      error.value = '请输入有效的链接地址'
+      return
+    }
   }
   
   isLoading.value = true
@@ -38,7 +52,7 @@ const handleProcessLink = async () => {
   
   try {
     // 通过IPC调用主进程的歌词解析功能
-    const data = await (window as any).ipcRenderer.invoke('parse-lyrics', linkInput.value.trim())
+    const data = await (window as any).ipcRenderer.invoke('parse-lyrics', processUrl)
     
     if (data.success) {
       result.value = data
@@ -101,7 +115,7 @@ const clearResult = () => {
             v-model="linkInput"
             type="text"
             class="search-input"
-            placeholder="请输入音乐分享链接..."
+            placeholder="请输入音乐分享链接或包含链接的分享文本..."
             @keypress="handleKeyPress"
             :disabled="isLoading"
           />
@@ -158,7 +172,8 @@ const clearResult = () => {
           <p>💡 使用提示：</p>
           <ul>
             <li>支持汽水音乐的分享链接</li>
-            <li>请复制音乐平台的分享链接到输入框</li>
+            <li>支持直接粘贴完整的分享文本（如：《歌名》@汽水音乐 链接）</li>
+            <li>程序会自动从分享文本中提取链接</li>
             <li>支持歌曲、专辑、歌单等链接</li>
             <li>按回车键快速处理</li>
           </ul>
