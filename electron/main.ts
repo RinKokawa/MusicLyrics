@@ -39,7 +39,7 @@ function getResourcePath(relativePath: string): string {
 // 解析歌词的IPC处理器
 ipcMain.handle('parse-lyrics', async (_event, url: string) => {
   try {
-    const scriptPath = getResourcePath('scripts/simple-parser.js')
+    const scriptPath = getResourcePath('scripts/lyrics-parser.js')
     
     console.log('解析歌词:', url)
     console.log('脚本路径:', scriptPath)
@@ -62,32 +62,20 @@ ipcMain.handle('parse-lyrics', async (_event, url: string) => {
       })
       
       childProcess.on('close', (code) => {
+        console.log('子进程退出码:', code)
+        console.log('stdout:', stdout)
+        console.log('stderr:', stderr)
+        
         if (code === 0) {
-          // 解析输出结果
-          const lines = stdout.split('\n')
-          const songInfoMatch = lines.find(line => line.includes('歌曲名:'))
-          const artistMatch = lines.find(line => line.includes('艺术家:'))
-          const durationMatch = lines.find(line => line.includes('时长:'))
-          const lyricsStartIndex = lines.findIndex(line => line.includes('歌词内容:'))
-          const lyricsEndIndex = lines.findIndex(line => line.includes('共') && line.includes('行歌词'))
-          
-          if (songInfoMatch && artistMatch && lyricsStartIndex !== -1 && lyricsEndIndex !== -1) {
-            const songName = songInfoMatch.split('歌曲名:')[1]?.trim()
-            const artistName = artistMatch.split('艺术家:')[1]?.trim()
-            const duration = durationMatch?.split('时长:')[1]?.trim()
-            const lyrics = lines.slice(lyricsStartIndex + 2, lyricsEndIndex - 1).join('\n')
-            
-            resolve({
-              success: true,
-              song_info: {
-                track_name: songName,
-                artist_name: artistName,
-                duration: duration
-              },
-              lyrics: lyrics
-            })
-          } else {
-            reject(new Error('解析输出格式错误'))
+          try {
+            // 尝试解析JSON输出
+            const result = JSON.parse(stdout.trim())
+            console.log('解析结果:', JSON.stringify(result, null, 2))
+            resolve(result)
+          } catch (parseError) {
+            console.error('JSON解析失败:', parseError)
+            console.log('原始输出:', stdout)
+            reject(new Error(`JSON解析失败: ${parseError}`))
           }
         } else {
           reject(new Error(stderr || '解析失败'))
@@ -95,6 +83,7 @@ ipcMain.handle('parse-lyrics', async (_event, url: string) => {
       })
       
       childProcess.on('error', (error) => {
+        console.error('子进程错误:', error)
         reject(error)
       })
     })

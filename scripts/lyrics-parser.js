@@ -231,11 +231,11 @@ async function parseSodaLink(input) {
 if (process.argv[1].endsWith('lyrics-parser.js')) {
   const input = process.argv.slice(2).join(' ');
   if (!input) {
-    console.log('使用方法: node lyrics-parser.js <汽水音乐链接或包含链接的文本>');
+    console.error('使用方法: node lyrics-parser.js <汽水音乐链接或包含链接的文本>');
     process.exit(1);
   }
   
-  console.log('正在解析汽水音乐链接...');
+  // 不输出调试信息到stdout，只输出JSON结果
   const result = await parseSodaLink(input);
   console.log(JSON.stringify(result, null, 2));
 }
