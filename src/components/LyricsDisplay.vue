@@ -28,16 +28,16 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import type { ParseResult, DisplayFormat, DownloadFormat } from '../types/lyrics'
+  import type { ParseResult, DisplayFormat, DownloadFormat, LyricsData } from '../types/lyrics'
 import { useLyricsFormatter } from '../composables/useLyricsFormatter'
 import { useFileDownload } from '../composables/useFileDownload'
 
 interface Props {
-  result: ParseResult
-  lyrics: string
+    result: ParseResult
+    lyrics: string | LyricsData
 }
 
-const props = defineProps<Props>()
+  const props = defineProps<Props>()
 
 const displayFormat = ref<DisplayFormat>('plain')
 const downloadFormat = ref<DownloadFormat>('srt')

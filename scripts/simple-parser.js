@@ -269,7 +269,11 @@ async function main() {
     console.log(result.lyrics);
     console.log('─'.repeat(50));
     console.log('');
-    console.log(`📊 共 ${result.lyrics.split('\n').length} 行歌词`);
+    if (typeof result.lyrics === 'string') {
+      console.log(`📊 共 ${result.lyrics.split('\n').length} 行歌词`);
+    } else if (result.lyrics?.sentences) {
+      console.log(`📊 共 ${result.lyrics.sentences.length} 行歌词`);
+    }
   } else {
     console.log('❌ 解析失败！');
     console.log(`错误信息: ${result.error}`);
