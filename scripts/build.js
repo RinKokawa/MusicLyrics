@@ -13,8 +13,6 @@ console.log('🚀 开始打包 MusicLyrics 应用...\n');
 // 检查必要文件是否存在
 function checkRequiredFiles() {
   const requiredFiles = [
-    'server.py',
-    'requirements.txt',
     'package.json',
     'electron-builder.json5'
   ];
