@@ -56,7 +56,10 @@ export interface LyricsData {
 // 解析结果类型
 export interface ParseResult {
   success: boolean
-  lyrics?: string
+  /**
+   * 原始歌词数据，可能是纯文本或结构化格式
+   */
+  lyrics?: string | LyricsData
   lyrics_with_timing?: LyricsLine[]
   song_info?: SongInfo
   source?: string

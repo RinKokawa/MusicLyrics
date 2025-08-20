@@ -19,9 +19,9 @@ export const useLyricsFormatter = () => {
         .join('\n')
     }
     
-    // 如果没有 lyrics_with_timing，尝试从原始歌词数据中获取
-    if (result?.lyrics?.sentences && Array.isArray(result.lyrics.sentences)) {
-      const filteredSentences = result.lyrics.sentences.filter((line: any) => line.text && line.text.trim())
+      // 如果没有 lyrics_with_timing，尝试从原始歌词数据中获取
+      if (typeof result?.lyrics === 'object' && Array.isArray(result.lyrics.sentences)) {
+        const filteredSentences = result.lyrics.sentences.filter((line: any) => line.text && line.text.trim())
       
       return filteredSentences
         .map((line: any) => {
@@ -38,9 +38,13 @@ export const useLyricsFormatter = () => {
   /**
    * 获取纯文本歌词
    */
-  const getPlainLyrics = (result: ParseResult): string => {
-    return result?.lyrics || ''
-  }
+    const getPlainLyrics = (result: ParseResult): string => {
+      if (!result?.lyrics) return ''
+      if (typeof result.lyrics === 'string') {
+        return result.lyrics
+      }
+      return result.lyrics.sentences?.map((line: any) => line.text).join('\n') || ''
+    }
 
   /**
    * 根据显示格式获取歌词内容

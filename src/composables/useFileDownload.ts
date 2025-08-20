@@ -8,19 +8,19 @@ export const useFileDownload = () => {
   /**
    * 获取歌词数据（统一处理函数）
    */
-  const getLyricsData = (result: ParseResult) => {
-    // 优先使用 lyrics_with_timing
-    if (result?.lyrics_with_timing && Array.isArray(result.lyrics_with_timing)) {
-      return result.lyrics_with_timing
+    const getLyricsData = (result: ParseResult) => {
+      // 优先使用 lyrics_with_timing
+      if (result?.lyrics_with_timing && Array.isArray(result.lyrics_with_timing)) {
+        return result.lyrics_with_timing
+      }
+
+      // 如果没有，使用原始歌词数据
+      if (typeof result?.lyrics === 'object' && Array.isArray(result.lyrics.sentences)) {
+        return result.lyrics.sentences.filter((line: any) => line.text && line.text.trim())
+      }
+
+      return []
     }
-    
-    // 如果没有，使用原始歌词数据
-    if (result?.lyrics?.sentences && Array.isArray(result.lyrics.sentences)) {
-      return result.lyrics.sentences.filter((line: any) => line.text && line.text.trim())
-    }
-    
-    return []
-  }
 
   /**
    * 生成 SRT 格式内容
@@ -80,7 +80,7 @@ export const useFileDownload = () => {
     const jsonData = {
       song_info: result.song_info,
       lyrics: {
-        plain_text: result.lyrics,
+        plain_text: typeof result.lyrics === 'string' ? result.lyrics : '',
         with_timing: lyricsData.length > 0 ? lyricsData : result.lyrics_with_timing,
         raw_data: result.lyrics // 保留原始数据结构
       },
